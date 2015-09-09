@@ -1,0 +1,34 @@
+<component name="ArtifactManager">
+  <artifact type="exploded-war" name="helloworld:war exploded">
+    <output-path>$PROJECT_DIR$/target/helloworld-version</output-path>
+    <root id="root">
+      <element id="directory" name="WEB-INF">
+        <element id="directory" name="classes">
+          <element id="module-output" name="helloworld" />
+        </element>
+        <element id="directory" name="lib">
+          <element id="library" level="project" name="Maven: org.springframework:spring-webmvc:4.2.1.RELEASE" />
+          <element id="library" level="project" name="Maven: org.springframework:spring-beans:4.2.1.RELEASE" />
+          <element id="library" level="project" name="Maven: org.springframework:spring-context:4.2.1.RELEASE" />
+          <element id="library" level="project" name="Maven: org.springframework:spring-aop:4.2.1.RELEASE" />
+          <element id="library" level="project" name="Maven: aopalliance:aopalliance:1.0" />
+          <element id="library" level="project" name="Maven: org.springframework:spring-core:4.2.1.RELEASE" />
+          <element id="library" level="project" name="Maven: org.springframework:spring-expression:4.2.1.RELEASE" />
+          <element id="library" level="project" name="Maven: org.springframework:spring-web:4.2.1.RELEASE" />
+          <element id="library" level="project" name="Maven: org.hibernate:hibernate-validator:5.1.3.Final" />
+          <element id="library" level="project" name="Maven: javax.validation:validation-api:1.1.0.Final" />
+          <element id="library" level="project" name="Maven: org.jboss.logging:jboss-logging:3.1.3.GA" />
+          <element id="library" level="project" name="Maven: com.fasterxml:classmate:1.0.0" />
+          <element id="library" level="project" name="Maven: org.slf4j:slf4j-api:1.7.12" />
+          <element id="library" level="project" name="Maven: ch.qos.logback:logback-classic:1.1.3" />
+          <element id="library" level="project" name="Maven: ch.qos.logback:logback-core:1.1.3" />
+          <element id="library" level="project" name="Maven: javax.inject:javax.inject:1" />
+        </element>
+      </element>
+      <element id="directory" name="META-INF">
+        <element id="file-copy" path="$PROJECT_DIR$/target/helloworld-version/META-INF/MANIFEST.MF" />
+      </element>
+      <element id="javaee-facet-resources" facet="helloworld/web/Web" />
+    </root>
+  </artifact>
+</component>
