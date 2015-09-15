@@ -7,6 +7,10 @@ slides/.sass-cache
 slides/css/reveal.min.css
 slides/js/reveal.min.js
 
+exercises/*.iml
+exercises/**/*.iml
+exercises/**/.idea
+exercises/**/target/
 exercises/*.class
 exercises/**/*.class
 
