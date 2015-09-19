@@ -52,14 +52,14 @@
                     <script type="text/template">
                         ## Features of Spring Web MVC (TBD)
 
-                        - *Clear separation of roles*
-                        - *Powerful and straightforward configuration of both framework and application classes as JavaBeans*
-                        - *Adaptability, non-intrusiveness, and flexibility*
-                        - *Reusable business code, no need for duplication*
-                        - *Customizable binding and validation*
-                        - *Customizable handler mapping and view resolution*
-                        - *Flexible model transfer*
-                        - *Beans whose lifecycle is scoped to the current HTTP request or HTTP `Session`*
+                        - Clear separation of roles
+                        - Powerful and straightforward configuration of both framework and application classes as JavaBeans
+                        - Adaptability, non-intrusiveness, and flexibility
+                        - Reusable business code, no need for duplication
+                        - Customizable binding and validation
+                        - Customizable handler mapping and view resolution
+                        - Flexible model transfer
+                        - Beans whose lifecycle is scoped to the current HTTP request or HTTP `Session`
 
                         Note:
                         - *Clear separation of roles*: Controllers, Validators, Command Objects, Form Objects,
@@ -74,9 +74,10 @@
                     <script type="text/template">
                         ## The `DispatcherServlet`
 
-                        - *Central `Servlet` that dispatches request to controllers (among other things)*
-                        - *Front Controller Pattern*
-                        - *Inherits from `HttpServlet`*
+                        - Central `Servlet` that dispatches request to controllers (among other things)
+                        - Front Controller Pattern
+                        - Inherits from `HttpServlet`
+                        - 
 
 
                         Note:
@@ -84,6 +85,27 @@
 
 
                         
+                    </script>
+                </section>
+
+                <section data-markdown data-separator-notes="^Note:">
+                    <script type="text/template">
+                        ## Configuration
+
+                        - How Spring @MVC interact with Spring?
+                            - Single Root Context (All-in-one)
+                            - Context Hierarchy (Separate configurations)
+
+                        Note:
+                    </script>
+                </section>
+
+                <section data-markdown data-separator-notes="^Note:">
+                    <script type="text/template">
+                        ## Configuration: All-in-one
+
+                        ![Alt text](/img/mvc-root-context.png)
+                        Note:
                     </script>
                 </section>
 
