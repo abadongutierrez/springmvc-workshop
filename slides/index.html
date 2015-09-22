@@ -50,7 +50,7 @@
 
                 <section data-markdown data-separator-notes="^Note:">
                     <script type="text/template">
-                        ## Features of Spring Web MVC (TBD)
+                        ## Features of Spring Web MVC
 
                         - Clear separation of roles
                         - Powerful and straightforward configuration of both framework and application classes as JavaBeans
@@ -62,10 +62,10 @@
                         - Beans whose lifecycle is scoped to the current HTTP request or HTTP `Session`
 
                         Note:
-                        - *Clear separation of roles*: Controllers, Validators, Command Objects, Form Objects,
+                        - __Clear separation of roles__: Controllers, Validators, Command Objects, Form Objects,
                         Model Objects, Handler Mapping, View Resolver, etc.
 
-                        - *Powerful and straightforward configuration of both framework and application classes as JavaBeans*:
+                        - __Powerful and straightforward configuration of both framework and application classes as JavaBeans__:
                         Easy reference across context. 
                     </script>
                 </section>
@@ -77,35 +77,10 @@
                         - Central `Servlet` that dispatches request to controllers (among other things)
                         - Front Controller Pattern
                         - Inherits from `HttpServlet`
-                        - 
 
 
                         Note:
                         It is completely integrated with the Spring IoC container
-
-
-                        
-                    </script>
-                </section>
-
-                <section data-markdown data-separator-notes="^Note:">
-                    <script type="text/template">
-                        ## Configuration
-
-                        - How Spring @MVC interact with Spring?
-                            - Single Root Context (All-in-one)
-                            - Context Hierarchy (Separate configurations)
-
-                        Note:
-                    </script>
-                </section>
-
-                <section data-markdown data-separator-notes="^Note:">
-                    <script type="text/template">
-                        ## Configuration: All-in-one
-
-                        ![Alt text](/img/mvc-root-context.png)
-                        Note:
                     </script>
                 </section>
 
@@ -118,11 +93,11 @@
                         Note:
                         After a `DispatcherServlet` is set up, and a request comes in for that specific `DispatcherServlet`, the `DispatcherServlet` starts processing the request as follows:
 
-                        - The `WebApplicationContext` is searched for and bound in the request as an attribute that the controller and other elements in the process can use. It is bound by default under the key `DispatcherServlet.WEB_APPLICATION_CONTEXT_ATTRIBUTE`.
-                        - The locale resolver is bound to the request
-                        - The theme resolver is bound to the request
+                        - The `WebApplicationContext` is searched for and bound in the request. It is bound by default under the key `DispatcherServlet.WEB_APPLICATION_CONTEXT_ATTRIBUTE`.
+                        - The locale resolver is bound to the request.
+                        - The theme resolver is bound to the request.
                         - If you specify a multipart file resolver, the request is inspected for multiparts; if multiparts are found, the request is wrapped in a `MultipartHttpServletRequest` for further processing
-                        - An appropriate handler is searched for. If a handler is found, the execution chain associated with the handler (preprocessors, postprocessors, and controllers) is executed in order to prepare a model or rendering.
+                        - An appropriate handler (@Controller) is searched for. If a handler is found, the execution chain associated with the handler (preprocessors, postprocessors, and controllers) is executed in order to prepare a model or rendering.
                         - If a model is returned, the view is rendered. If no model is returned, (may be due to a preprocessor or postprocessor intercepting the request, perhaps for security reasons), no view is rendered, because the request could already have been fulfilled.
                     </script>
                     <div style="hidden: true">
@@ -155,20 +130,242 @@ DispatcherServlet --> Browser: response
                     <script type="text/template">
                         ## Configuration
 
-                        - *How does Spring MVC interact with Spring?*
+                        - How does Spring MVC interact with Spring?
                             - All-in-one configuration
                             - Separate configurations
 
+                        Note:
+                        - The all-in-one is easy but its not convenient when there are different
+                            entry points in the application (other servlets by example).
+                    </script>
+                </section>
+
+                <section data-markdown data-separator-notes="^Note:">
+                    <script type="text/template">
+                        ## Configuration: All-in-one
+
+```xml
+<servlet>
+  <servlet-name>myapp</servlet-name>
+  <servlet-class>
+     org.springframework.web.servlet.DispatcherServlet
+  </servlet-class>
+  <init-param>
+     <param-name>contextConfigLocation</param-name>
+     <param-value>
+        /WEB-INF/spring/web-config.xml
+        /WEB-INF/spring/app-config.xml
+     </param-value>
+  </init-param>
+  <load-on-startup>1</load-on-startup>
+</servlet>
+
+<servlet-mapping>
+  <servlet-name>myapp</servlet-name>
+  <url-pattern>/myapp/*</url-pattern>
+</servlet-mapping>
+```
+                        Note:
+                    </script>
+                </section>
+
+                <section data-markdown data-separator-notes="^Note:">
+                    <script type="text/template">
+                        ## Configuration: Separate Configurations
+
+```xml
+<context-param>
+  <param-name>contextConfigLocation</param-name>
+  <param-value>
+     classpath:/META-INF/spring/app-config.xml
+  </param-value>
+</context-param>
+
+<listener>
+  <listener-class>
+     org.springframework.web.context.ContextLoaderListener
+  </listener-class>
+</listener>
+
+<servlet>
+  <servlet-name>myapp</servlet-name>
+  <servlet-class>
+     org.springframework.web.servlet.DispatcherServlet
+  </servlet-class>
+  <init-param>
+     <param-name>contextConfigLocation</param-name>
+     <param-value>
+        /WEB-INF/spring/web-config.xml
+     </param-value>
+  </init-param>
+  <load-on-startup>1</load-on-startup>
+</servlet>
+
+<servlet-mapping>...</servlet-mapping>
+```
+                        Note:
+                    </script>
+                </section>
+
+                <section data-markdown data-separator-notes="^Note:">
+                    <script type="text/template">
+                        ## `@Controller` class
+
+```java
+// Controllers as simple POJOs
+@Controller
+public class AccountsController {
+    private final AccountManagerService accountManagerService;
+
+    // you can inject spring beans
+    @Autowired
+    public AccountsController(AccountManagerService accountManagerService) {
+        this.accountManagerService = accountManagerService;
+    }
+
+    // Map URL to method
+    @RequestMapping("/accounts")
+    public String list(Model model) {
+        model.addAttribute("accountList", accountManagerService.findAll());
+        // Return view to be rendered using the 'Model'
+        return "/WEB-INF/accounts/list.jsp";
+    }
+}
+```
+
+                        `http://localhost:8080/appContext/servletMapping/accounts`
 
                         Note:
                     </script>
                 </section>
 
-                <section>
-                    <h2>The <></h2>
-                    <p>
-                        reveal.js enables you to create beautiful interactive slide decks using HTML. This presentation will show you examples of what it can do.
-                    </p>
+                <section data-markdown data-separator-notes="^Note:">
+                    <script type="text/template">
+                        ## Mapping Request with @RequestMapping (I)
+
+                        - By URL
+```java
+@RequestMapping("/accounts")
+public String list(Model model) { ... }
+```
+                        - By URL and request method
+```java
+@RequestMapping(value="/accounts", method=RequestMethod.GET)
+public String list(Model model) { ... }
+```
+
+                        Note:
+                    </script>
+                </section>
+
+                <section data-markdown data-separator-notes="^Note:">
+                    <script type="text/template">
+                        ## Mapping Request with @RequestMapping (II)
+
+                        - By just the presence (or not) of a request param or with an specific value
+
+```java
+@RequestMapping(value="/accounts", params={"param"})
+public String list(Model model) { ... }
+
+@RequestMapping(value="/accounts", params={"!param"})
+public String list(Model model) { ... }
+
+@RequestMapping(value="/accounts", params={"param=Value"})
+public String list(Model model) { ... }
+```
+                        - The same can be done for headers
+```java
+@RequestMapping(value="/accounts", headers={"myHeader=myValue"})
+public String list(Model model) { ... }
+```
+
+                        Note:
+                    </script>
+                </section>
+
+                <section data-markdown data-separator-notes="^Note:">
+                    <script type="text/template">
+                        ## Request Parameters (I)
+
+                        - You can access request parameters with `@RequestParam`
+                            - parameters are extracted from the request
+                            - type conversion is applied (primitive or wrapper)
+                            - throws an exception if missing or wrong type
+
+```java
+@RequestMapping(value="/owners/show")
+public String show(@RequestParam("id") long id, Model model) { ... }
+```
+                        `http://app.com/context/owners/show?id=345543344`
+
+                        Note:
+                    </script>
+                </section>
+
+                <section data-markdown data-separator-notes="^Note:">
+                    <script type="text/template">
+                        ## Request Parameters (II)
+
+                        - Parameter can be optional
+                            - `required` attribute is `true` by default
+```java
+@RequestMapping(value="/owners/show")
+public String show(@RequestParam(value="id", required=false) long id) { ... }
+```
+
+                        - Parameter name can be optional
+                            - by default the name of the java argument is used
+                            - requires Java 8 or debug symbols enabled
+```java
+@RequestMapping(value="/owners/show")
+public String show(@RequestParam long id) { ... }
+```                     
+                        - Parameter using `Optional<>` is not required by default
+                        Note:
+                    </script>
+                </section>
+
+                <section data-markdown data-separator-notes="^Note:">
+                    <script type="text/template">
+                        ## Path Variables (I)
+
+                        - When using URI Templates use `@PathVariable` to extract values from URL
+                            - type conversion is applied (primitive or wrapper)
+                            - throws an exception if wrong type
+```java
+@RequestMapping(value="/owners/{id}")
+public String show(@PathVariable("id") long id) { ... }
+```
+
+                        `http://app.com/context/owners/345543344`
+
+                        Note:
+                    </script>
+                </section>
+
+                <section data-markdown data-separator-notes="^Note:">
+                    <script type="text/template">
+                        ## Path Variables (II)
+
+                        - a `@PathVariable` can use regular expressions
+```java
+// it will only match numeric IDs
+@RequestMapping(value="/owners/{id:[\\d]+}")
+public String show(@PathVariable("id") long id) { ... }
+```
+                        - (same as `@RequestParam`) Variable name can be optional
+                            - by default the name of the java argument is used
+                            - requires Java 8 or debug symbols enabled
+
+                        Note:
+                    </script>
+                </section>
+
+                <section data-markdown>
+                    <script type="text/template">
+                        ## Thank you!
+                    </script>
                 </section>
 
                 <!-- Example of nested vertical slides -->
