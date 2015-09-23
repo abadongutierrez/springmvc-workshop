@@ -23,5 +23,17 @@
       <a href="${pageContext.request.contextPath}/binder/preferences?values=My Tooltip-English">Binding</a>
       <br />
    </p>
+   <h3>No View</h3>
+   <p>
+       <a href="${pageContext.request.contextPath}/noview">No view</a>
+       <br />
+   </p>
+   <h3>Redirect View Controller</h3>
+   <p>
+       <a href="${pageContext.request.contextPath}/old-index">Redirect</a>
+       <br />
+       <a href="${pageContext.request.contextPath}/old-index?message=Hello">Redirect keeping params/</a>
+       <br />
+   </p>
 </body>
 </html>

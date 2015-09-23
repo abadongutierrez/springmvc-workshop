@@ -21,4 +21,6 @@
 
    <mvc:view-controller path="/" view-name="index" />
 
+   <mvc:redirect-view-controller path="/old-index" redirect-url="/" context-relative="true" keep-query-params="true" />
+
 </beans>
