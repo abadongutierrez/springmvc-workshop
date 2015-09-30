@@ -8,19 +8,63 @@
         http://www.springframework.org/schema/context
         http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd">
 
-   <mvc:annotation-driven />
+   <mvc:annotation-driven/>
 
    <context:component-scan base-package="com.nearsoft.workshops.springmvc.web.controller"/>
 
    <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
-      <property name="prefix" value="/WEB-INF/" />
-      <property name="suffix" value=".jsp" />
+      <property name="prefix" value="/WEB-INF/"/>
+      <property name="suffix" value=".jsp"/>
+      <property name="order" value="#{tilesViewResolver.order+1}"/>
    </bean>
 
-   <mvc:default-servlet-handler />
+   <bean id="tilesViewResolver" class="org.springframework.web.servlet.view.tiles3.TilesViewResolver">
+      <property name="order" value="#{T(org.springframework.core.Ordered).HIGHEST_PRECEDENCE}"/>
+   </bean>
 
-   <mvc:view-controller path="/" view-name="index" />
+   <mvc:default-servlet-handler/>
 
-   <mvc:redirect-view-controller path="/old-index" redirect-url="/" context-relative="true" keep-query-params="true" />
+   <mvc:view-controller path="/" view-name="index"/>
+
+   <mvc:redirect-view-controller path="/old-index" redirect-url="/" context-relative="true" keep-query-params="true"/>
+
+   <mvc:interceptors>
+      <mvc:interceptor>
+         <mvc:mapping path="/*"/>
+         <mvc:exclude-mapping path="/some/weird/path"/>
+         <bean class="com.nearsoft.workshops.springmvc.web.interceptor.TestInterceptor"/>
+      </mvc:interceptor>
+
+      <mvc:interceptor>
+         <mvc:mapping path="/layout/*"/>
+         <bean id="localeChangeInterceptor"
+               class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor">
+            <property name="paramName" value="language"/>
+         </bean>
+      </mvc:interceptor>
+   </mvc:interceptors>
+
+   <bean id="messageSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
+      <property name="basenames">
+         <list>
+            <value>/WEB-INF/messages/global</value>
+         </list>
+      </property>
+      <property name="cacheSeconds" value="60"/>
+   </bean>
+
+   <mvc:tiles-configurer check-refresh="true" validate-definitions="true">
+      <mvc:definitions location="/WEB-INF/tiles.xml"/>
+   </mvc:tiles-configurer>
+
+   <!-- to avoid:
+      java.lang.UnsupportedOperationException: Cannot change HTTP accept header - use a different locale resolution strategy
+      because the default locale strategy is with AcceptHeaderLocaleResolver and using that you cannot change the HTTP accept header
+      using the interceptor localeChangeInterceptor
+   -->
+   <bean id="localeResolver"
+         class="org.springframework.web.servlet.i18n.SessionLocaleResolver">
+      <property name="defaultLocale" value="en"/>
+   </bean>
 
 </beans>

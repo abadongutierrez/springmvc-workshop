@@ -35,5 +35,23 @@
        <a href="${pageContext.request.contextPath}/old-index?message=Hello">Redirect keeping params/</a>
        <br />
    </p>
+   <h3>Localized Hello World!</h3>
+   <p>
+      <a href="${pageContext.request.contextPath}/i18n/helloWorld?lang=en">English</a>
+      <br />
+      <a href="${pageContext.request.contextPath}/i18n/helloWorld?lang=es">Spanish</a>
+      <br />
+      <a href="${pageContext.request.contextPath}/i18n/helloWorld?lang=de">German</a>
+      <br />
+   </p>
+   <h3>Views with layout using Tiles</h3>
+   <p>
+      <a href="${pageContext.request.contextPath}/layout/welcome?language=en">Welcome (english)</a>
+      <br />
+      <a href="${pageContext.request.contextPath}/layout/welcome?language=es">Welcome (spanish)</a>
+      <br />
+      <a href="${pageContext.request.contextPath}/layout/welcome?language=de">Welcome (german)</a>
+      <br />
+   </p>
 </body>
 </html>
