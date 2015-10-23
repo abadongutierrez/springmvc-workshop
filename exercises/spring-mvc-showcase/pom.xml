@@ -2,7 +2,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
    <modelVersion>4.0.0</modelVersion>
    <groupId>com.nearsoft.workshops.springmvc</groupId>
-   <artifactId>showcase</artifactId>
+   <artifactId>spring-mvc-showcase</artifactId>
    <packaging>war</packaging>
    <version>version</version>
    <name>Spring MVC Application</name>
@@ -120,6 +120,24 @@
          <artifactId>jstl</artifactId>
          <version>1.2</version>
       </dependency>
+
+      <!-- To support JSON -->
+      <dependency>
+         <groupId>com.fasterxml.jackson.core</groupId>
+         <artifactId>jackson-core</artifactId>
+         <version>2.6.3</version>
+      </dependency>
+      <dependency>
+         <groupId>com.fasterxml.jackson.core</groupId>
+         <artifactId>jackson-annotations</artifactId>
+         <version>2.6.3</version>
+      </dependency>
+      <dependency>
+         <groupId>com.fasterxml.jackson.core</groupId>
+         <artifactId>jackson-databind</artifactId>
+         <version>2.6.3</version>
+      </dependency>
+
    </dependencies>
    <build>
       <plugins>
