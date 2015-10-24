@@ -11,4 +11,25 @@
       <put-attribute name="main" value="/WEB-INF/layouts/welcome.jsp" />
       <put-attribute name="navigationTab" value="home" />
    </definition>
+
+   <definition name="index" extends="standardLayout">
+      <put-attribute name="title" value="welcome.title" />
+      <put-attribute name="main" value="/WEB-INF/index.jsp" />
+   </definition>
+
+   <definition name="helloWorld" extends="standardLayout">
+      <put-attribute name="title" value="welcome.title" />
+      <put-attribute name="main" value="/WEB-INF/helloWorld.jsp" />
+   </definition>
+
+   <!-- TODO: Move this to /preferences in its own tiles.xml -->
+   <definition name="preferences/new" extends="standardLayout">
+      <put-attribute name="title" value="Preferences" />
+      <put-attribute name="main" value="/WEB-INF/preferences/new.jsp" />
+   </definition>
+
+   <definition name="preferences/show" extends="standardLayout">
+      <put-attribute name="title" value="Preferences" />
+      <put-attribute name="main" value="/WEB-INF/preferences/show.jsp" />
+   </definition>
 </tiles-definitions>
