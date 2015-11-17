@@ -14,3 +14,8 @@ exercises/**/target/
 exercises/*.class
 exercises/**/*.class
 
+**/*.iml
+**/.idea
+**/target/
+**/*.class
+**/*.class
