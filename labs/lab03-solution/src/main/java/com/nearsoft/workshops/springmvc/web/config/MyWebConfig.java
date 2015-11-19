@@ -1,5 +1,7 @@
 package com.nearsoft.workshops.springmvc.web.config;
 
+import com.nearsoft.workshops.springmvc.web.view.EmployeeReportXlsView;
+import com.nearsoft.workshops.springmvc.web.view.MyTxtView;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -10,6 +12,7 @@ import org.springframework.web.servlet.config.annotation.DefaultServletHandlerCo
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+import org.springframework.web.servlet.view.BeanNameViewResolver;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 
 @EnableWebMvc // Same as <mvc:annotation-driven />
@@ -30,7 +33,25 @@ public class MyWebConfig extends WebMvcConfigurerAdapter {
       InternalResourceViewResolver viewResolver = new InternalResourceViewResolver();
       viewResolver.setPrefix("/WEB-INF/views/");
       viewResolver.setSuffix(".jsp");
+      viewResolver.setOrder(2);
       return viewResolver;
+   }
+
+   @Bean
+   public ViewResolver beanNameViewResolver() {
+      BeanNameViewResolver viewResolver = new BeanNameViewResolver();
+      viewResolver.setOrder(1);
+      return viewResolver;
+   }
+
+   @Bean
+   public MyTxtView txtView() {
+      return new MyTxtView();
+   }
+
+   @Bean
+   public EmployeeReportXlsView employeeReport() {
+      return new EmployeeReportXlsView();
    }
 
    @Override

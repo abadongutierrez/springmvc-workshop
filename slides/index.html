@@ -209,6 +209,13 @@ DispatcherServlet --> Browser: response
 
                 <section data-markdown data-separator-notes="^Note:">
                     <script type="text/template">
+                        ## Implementing `Controller`s
+                        Note:
+                    </script>
+                </section>
+
+                <section data-markdown data-separator-notes="^Note:">
+                    <script type="text/template">
                         ## `@Controller` class
 
 ```java
@@ -362,9 +369,285 @@ public String show(@PathVariable("id") long id) { ... }
                     </script>
                 </section>
 
+                 <section data-markdown data-separator-notes="^Note:">
+                    <script type="text/template">
+                        ## Accessing Request Data (I)
+
+                        - How to access URL data without using `HttpServletRequest`?
+                            - Use `@Value` and `SpEL`
+                            - You can access any request properties:
+                                - `request.requestURI`, `request.requetURL`, `request.queryString`, `requets.method`, etc.
+
+```java
+@RequestMapping(value="/flights")
+public String showFlights(Model model,
+    @Value("#{request.method}") String httpMethod,
+    @Value("#{request.queryString}") String queryString) { ... }
+```
+                        Note:
+                    </script>
+                </section>
+
+                <section data-markdown data-separator-notes="^Note:">
+                    <script type="text/template">
+                        ## Accessing Request Data (II)
+
+                        - Want to access request headers, cookies?
+                            - Use `@RequestHeader` to access request headers
+                            - Use `@CookieValue` to acces cookies values
+
+```java
+@RequestMapping(value="/flights")
+public String showFlights(Model model,
+    @RequestHeader("user-agent") String browerType,
+    @CookieValue("jsessionid") String sessionId) { ... }
+```
+                        Note:
+                    </script>
+                </section>
+
+                <section data-markdown data-separator-notes="^Note:">
+                    <script type="text/template">
+                        ## `@RequestMapping` handler methods
+
+                        - An `@RequestMapping` handler method can have very flexible signatures.
+                        - A lot of supported method arguments and also return types you can use.
+                        - [More info](http://docs.spring.io/spring/docs/current/spring-framework-reference/htmlsingle/#mvc-ann-methods)
+                        Note:
+                    </script>
+                </section>
+
                 <section data-markdown>
                     <script type="text/template">
                         ## Lab: lab02
+                    </script>
+                </section>
+
+                <section data-markdown data-separator-notes="^Note:">
+                    <script type="text/template">
+                        ## Resolving Views
+                        Note:
+                    </script>
+                </section>
+
+                <section data-markdown data-separator-notes="^Note:">
+                    <script type="text/template">
+                        ## `ViewResolver`s
+
+                        - Enable you to render models in a browser without tying you to a specific view technology
+                        - Encapsulate View selection strategy
+                        - Provides a mapping between view names and actual views
+
+```java
+public interface ViewResolver {
+    View resolveViewName(String viewName, Locale locale);
+}
+```
+                        Note:
+                    </script>
+                </section>
+
+                <section data-markdown data-separator-notes="^Note:">
+                    <script type="text/template">
+                        ## `View`s
+
+                        - Implementation of the `View` interface
+                        - View knows the type of output it can produce
+                        - The `render` method generates output
+                        - Spring uses by default `JstlView` for rendering JSP
+
+```java
+public interface View {
+    String getContentType(); // mime type
+    void render(Map<String, ?> model,
+        HttpServlerRequest request,
+        HttpServlerResponse response)
+        throws Exception;
+}
+```
+                        Note:
+                    </script>
+                </section>
+
+                <section data-markdown data-separator-notes="^Note:">
+                    <script type="text/template">
+                        ## Some `ViewResolver`s
+
+                        - `UrlBasedViewResolver`
+                        - `BeanNameViewResolver`
+                        - `XmlNameViewResolver`
+
+                        Note:
+                    </script>
+                </section>
+
+                <section data-markdown data-separator-notes="^Note:">
+                    <script type="text/template">
+                        ## `UrlBasedViewResolver` (I)
+
+                        - Interprets a view name as a resource location (file)
+                        - Subclasses:
+                            - `InternalResourceViewResolver`
+                            - `FreeMarkerViewResolver`
+                            - `ThymeleafViewResolver`
+                            - etc
+                        - Typically files are stored under `/WEB-INF`
+                            - hidden from direct browser access
+                        - The view name is not always an actual file
+                            - Tiles
+
+                        Note:
+                    </script>
+                </section>
+
+                <section data-markdown data-separator-notes="^Note:">
+                    <script type="text/template">
+                        ## `UrlBasedViewResolver` (II)
+
+                        - Example using `InternalResourceViewResolver` with `prefix` = "/WEB-INF/views/" and `suffix` = "jsp"
+```Java
+// method in a controller
+public String showAccount(...) {
+    // some controller logic
+    return "account/show"; // jsp is at /WEB-INF/views/account/show.jsp
+}
+```
+
+                        Note:
+                    </script>
+                </section>
+
+                <section data-markdown data-separator-notes="^Note:">
+                    <script type="text/template">
+                        ## `BeanNameViewResolver`
+
+                        - Interprets a view name as a **bean name**
+                        - Declared bean _must_ be a `View` instance
+
+```Java
+// method in a controller
+public String list(Model model) {
+    // ...
+    // Controller method returns a logical view name
+    return "accountList";
+}
+```
+
+```xml
+<bean class="org.springframework.web.servlet.view.BeanNameViewResolver" />
+
+<bean name="accountList" class="x.y.z.AccountXlsView" />
+```
+
+                        Note:
+                    </script>
+                </section>
+
+                <section data-markdown data-separator-notes="^Note:">
+                    <script type="text/template">
+                        ## `XmlViewResolver`
+
+                        - Reads view beans from a given _Standard Spring Beans_ file
+                        - Works like `BeanNameViewResolver`
+                        - Only matches `View`s declared in the file
+                        - Helps to keep `View`s beans separated
+
+```xml
+<bean class="...view.XmlViewResolver">
+    <property name="location">
+        <value>/WEB-INF/spring/views.xml</value>
+    </property>
+</bean>
+```
+
+                        Note:
+                    </script>
+                </section>
+
+                <section data-markdown data-separator-notes="^Note:">
+                    <script type="text/template">
+                        ## Content generating `View`s
+
+                        - Views that generate 'files'
+                        - Extends from a base class
+                            - `AbstractExcelView`, `AbstractPdfView`, etc.
+                        - Creates view content using and API/lib
+                            - POI, iText
+                        - Base class writes generated content (bytes) to the response stream
+
+                        Note:
+                    </script>
+                </section>
+
+                <section data-markdown data-separator-notes="^Note:">
+                    <script type="text/template">
+                        ## ViewResolver Chain (I)
+
+                        - The `DispatcherServlet` discovers `ViewResolver` beans by type
+                        - Spring supports multiple `ViewResolver`s
+                            - Each is given a "chance" to match a view
+                            - First resolver to return a `View` wins
+                        - View resolver can return null to indicate the view could not be found
+                            - Some view resolvers like `InternalResourceViewResolver` _always_ return a views
+                            - chain order matters
+
+                        Note:
+                    </script>
+                </section>
+
+                <section data-markdown data-separator-notes="^Note:">
+                    <script type="text/template">
+                        ## ViewResolver Chain (II)
+
+                        - You can chain `ViewResolver`s by setting the **order** property
+                            - `ViewResolvers` implements `org.springframework.core.Ordered`
+                            - the higher the order property, the later the view resolver is positioned in the chain
+
+```
+<bean class="...ABCViewResolver">
+    ...
+    <property name="order" value="1" />
+</bean>
+
+<bean class="...XYZViewResolver">
+    ...
+    <property name="order" value="2" />
+</bean>
+```
+
+                        Note:
+                    </script>
+                </section>
+
+                <section data-markdown>
+                    <script type="text/template">
+                        ## Lab: lab03
+                    </script>
+                </section>
+
+                <section data-markdown data-separator-notes="^Note:">
+                    <script type="text/template">
+                        ## Form Handling
+                        Note:
+                    </script>
+                </section>
+
+                <section data-markdown>
+                    <script type="text/template">
+                        ## Lab: lab04
+                    </script>
+                </section>
+
+                <section data-markdown data-separator-notes="^Note:">
+                    <script type="text/template">
+                        ## Interceptors and Advices
+                        Note:
+                    </script>
+                </section>
+
+                <section data-markdown>
+                    <script type="text/template">
+                        ## Lab: lab05
                     </script>
                 </section>
 
