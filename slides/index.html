@@ -632,6 +632,477 @@ public String list(Model model) {
                     </script>
                 </section>
 
+                <section data-markdown data-separator-notes="^Note:">
+                    <script type="text/template">
+                        ## Form Objects (I)
+
+                        - Simple POJOs with getters & setters
+                        - Data Binding just using the Form Object in handler method argument
+                        - Could be Domain Objects
+                            - _Not recomended_
+                        - Prefer separate web layer form Objects
+                            - DTO Pattern
+                            - UI specific needs
+                            - _Recomended_
+
+                        Note:
+                    </script>
+                </section>
+
+                <section data-markdown data-separator-notes="^Note:">
+                    <script type="text/template">
+                        ## Form Objects (II)
+
+                        - Form input name is binded to the attribute in the Form Object with the same name
+
+```html
+<form action="/accounts" method="POST">
+    Number: <input type="text" name="number" />
+    Date: <input type="text" name="date" />
+    <input type="submit">
+</form>
+```
+
+```Java
+public class Account {
+    private String number;
+    private String date;
+
+    // constructor, getters and setters
+}
+```
+
+                        Note:
+                    </script>
+                </section>
+
+                <section data-markdown data-separator-notes="^Note:">
+                    <script type="text/template">
+                        ## Form Workflow
+
+                        - Initial `HTTP GET` to present the form
+                            - prepare the form Object
+                        - Subsequent `HTTP POST` to submit the form
+                            - Apply request values to the form Object
+                            - Perform validation
+                            - Save changes
+                        - `POST-Redirect-GET` on success
+                            - `POST-Redirect-GET` is a good practice
+                            - Redirect to the next page instead of rendering
+                                - "redirect:..."
+                            - Avoid accidental repost
+
+                        Note:
+                    </script>
+                </section>
+
+                <section data-markdown data-separator-notes="^Note:">
+                    <script type="text/template">
+                        ## Search Forms
+
+                        - `HTTP GET` to present and submit the form
+                            - Submit has no _side effects_ (read only)
+                        - Redirect to detail page for direct hits
+                        - Render the results in case of multiple hits. 
+
+                        Note:
+                    </script>
+                </section>
+
+                <section data-markdown data-separator-notes="^Note:">
+                    <script type="text/template">
+                        ## Data Binding On Submit - (I)
+
+                        - Declare the form object as an input argument in handler method
+                            - No binding otherwise
+                            - Added to the model as an attribute if you annotate using `@ModelAttribute`
+                            - Submitted form-data binds (copied in) automatically
+
+```Java
+@RequestMapping(...)
+public String reward(Model model,
+    @ModelAttribute("dining") DiningForm diningForm) {
+    // added to the model
+    assert(diningForm == model.asMap().get("dining"));
+
+    // ...
+}
+```
+
+                        Note:
+                    </script>
+                </section>
+
+                <section data-markdown data-separator-notes="^Note:">
+                    <script type="text/template">
+                        ## Data Binding On Submit - (II)
+
+                        - if not annotated with `@ModelAttribute`, attribute name assumed from _type_
+
+```Java
+@RequestMapping(...)
+public String reward(Model model,
+    DiningForm diningForm) {
+    // added to the model
+    assert(diningForm == model.asMap().get("diningForm"));
+
+    // ...
+}
+```
+
+                        Note:
+                    </script>
+                </section>
+
+                <section data-markdown data-separator-notes="^Note:">
+                    <script type="text/template">
+                        ## Data Binding On Submit - (III)
+
+                        - How this works?
+                            1. Spring looks for Form Object key (attribute) in Model
+                                - key is the method parameter _type_ or the name in `@ModelAttribute`
+                                - if not found, a new Form Object is created and placed in Model
+                                    - Form Objects needs a default constructor because of this
+                            2. Form Object properties populated
+                                - Based on request parameters
+                            3. Controller method called iwht parameters populated
+
+                        Note:
+                    </script>
+                </section>
+
+                <section data-markdown data-separator-notes="^Note:">
+                    <script type="text/template">
+                        ## Control Data Binding Fields
+
+                        - Allowed fields (white list)
+
+```Java
+// method in your controller
+@InitBinder
+public void initBinder(WebDataBinder binder) {
+    binder.setAllowedFields("date", "amount");
+}
+```
+
+                        - Disallowd fields (black list)
+
+```Java
+// method in your controller
+@InitBinder
+public void initBinder(WebDataBinder binder) {
+    binder.setDisallowedFields("id", "*Id");
+}
+```
+
+                        Note:
+                    </script>
+                </section>
+
+                <section data-markdown data-separator-notes="^Note:">
+                    <script type="text/template">
+                        ## Check Data Binding Errors
+
+                        - Binding Errors:
+                            - Type mismatch Errors
+                            - Missing field Errors
+                            - Method invocation Errors
+                                - getters or setters fail
+                        - Add `BindingResult` input parameter after the form object!!!
+
+```Java
+// method in your controller
+@RequestMapping(...)
+public String reward(DiningForm diningForm, BindingResult result) {
+    if (result.hasErrors()) {
+        return "rewards/edit"
+    }
+
+    // ...
+}
+```
+
+                        Note:
+                    </script>
+                </section>
+
+                <section data-markdown data-separator-notes="^Note:">
+                    <script type="text/template">
+                        ## Redirect Attributes
+
+                        - Allow control of data passed on redirect
+                        - Use `RedirectAttributes` (extends Model)
+                        - Attributes passed via query-string on redirect
+
+
+```Java
+// method in your controller
+@RequestMapping(...)
+public String reward(DiningForm diningForm, ..., 
+    RedirectAttributes redirectAttributes) {
+    // validation, etc
+    RewardCofirmation conf = service.create();
+
+    redirectAttributes.addAttribute("id", conf.getConfirmationNumber());
+
+    return "redirect:/rewards/show";
+}
+```
+
+/rewards/show?id=1235345345
+
+                        Note:
+                    </script>
+                </section>
+
+                <section data-markdown data-separator-notes="^Note:">
+                    <script type="text/template">
+                        ## Flash Scope
+
+                        - Flash: allow for data that survives a redirect
+                        - Use `addFlashAttribute` from `RedirectAttributes`
+                        - Attribute will appear in Model of the next request for this user
+
+
+```Java
+// method in your controller
+@RequestMapping(...)
+public String reward(DiningForm diningForm, ..., 
+    RedirectAttributes redirectAttributes) {
+    // validation, etc
+    RewardCofirmation conf = service.create();
+
+    redirectAttributes.addAttribute("id", conf.getConfirmationNumber());
+
+    redirectAttributes.addFlashAttribute("msg", "Reward created");
+
+    return "redirect:/rewards/show";
+}
+```
+
+                        Note:
+                    </script>
+                </section>
+
+                <section data-markdown data-separator-notes="^Note:">
+                    <script type="text/template">
+                        ## Validating Form Objects
+
+                        - Spring supports JSR 303 (Bean Validation)
+                            - Hibernate Validator is the reference Implementation
+                            - Annotation driven
+                        - Custom Validation
+                            - Implement `org.springframework.validation.Validator`
+
+                        Note:
+                    </script>
+                </section>
+
+                <section data-markdown data-separator-notes="^Note:">
+                    <script type="text/template">
+                        ## Some JSR 303 Validation Annotations
+
+                        - `@NotNull`: field cannot be null
+                        - `@NotEmpty`: not null and not empty
+                        - `@Size(min="", max="")`: size in the range
+                        - `@Pattern(regexp="")`: match a regular expression
+                        - `@Min(n)`, `@Max(n)`: Min / Max value for numeric field
+                        Note:
+                    </script>
+                </section>
+
+                <section data-markdown data-separator-notes="^Note:">
+                    <script type="text/template">
+                        ## Validation Example
+
+```Java
+public class DiningForm {
+    @Patter(regexp="\\d{16}")
+    private String creditCardNumber;
+
+    @Size(min=10, max=10)
+    private String merchantNumber;
+
+    @Min(0)
+    private BigDecimal monetaryAmount;
+
+    @NotNull
+    private Date date;
+}
+```
+
+                        Note:
+                    </script>
+                </section>
+
+                <section data-markdown data-separator-notes="^Note:">
+                    <script type="text/template">
+                        ## Invoking Validation
+
+                        - `@Valid` next to form object in controller method
+                        - Validation errors are registered in the `BindingResult`
+                            - combined with binding errors
+
+```Java
+// method in your controller
+@RequestMapping(...)
+public String reward(@Valid DiningForm diningForm, BindingResult result) {
+    if (result.hasErrors()) {
+        return "rewards/edit"
+    }
+
+    // ...
+}
+```
+
+                        Note:
+                    </script>
+                </section>
+
+                <section data-markdown data-separator-notes="^Note:">
+                    <script type="text/template">
+                        ## Custom Validations - (I)
+
+                        - Write a Spring MVC Validator
+
+```Java
+public class DiningValidator implements Validator {
+    public void validate(Object target, Errors errors) {
+        // ...
+        errors.rejectValue("merchantNumber", "numberExpected");
+
+        // ...
+    }
+
+    public boolean supports(Class clazz) {
+        return DiningForm.class.equals(clazz);
+    }
+}
+```
+
+                        Note:
+                    </script>
+                </section>
+
+                <section data-markdown data-separator-notes="^Note:">
+                    <script type="text/template">
+                        ## Custom Validations - (II)
+
+                        - Register per controller
+                            - User `@InitBinder` method
+                        - Why use?
+                            - Form object is a domain object
+                                - Dont want to add validator methods
+                            - Can reuse a validator class
+
+```Java
+// method in your controller
+@InitBinder
+public void initBinder(WebDataBinder binder) {
+    binder.setValidator(new DiningValidator());
+}
+```
+
+                        Note:
+                    </script>
+                </section>
+
+                <section data-markdown data-separator-notes="^Note:">
+                    <script type="text/template">
+                        ## Formatters - (I)
+
+                        - Formatters parse incoming string data
+                        - Formatters format bean data for display or editing
+
+                        Note:
+                    </script>
+                </section>
+
+                <section data-markdown data-separator-notes="^Note:">
+                    <script type="text/template">
+                        ## Formatters - (II)
+
+                        - Some ways to use formatters:
+                        - Annotations: inside the bean class
+
+```Java
+public class Account {
+    @DateTimeFormat(iso=ISO.DATE)
+    private Date endDate;
+
+    @NumerFormat(style=Style.CURRENCY)
+    private BidDecimal amount;
+}
+```
+
+                        - JSP tags (using <fmt> tag library)
+
+```xml
+<fmt:formatDate value="${account.endDate" pattern="MM/dd/yyyy" />
+```
+
+                        - Register custom formatters
+                            - `@InitBinder` method or adding globaly in configuration
+
+
+                        Note:
+                    </script>
+                </section>
+
+                <section data-markdown data-separator-notes="^Note:">
+                    <script type="text/template">
+                        ## Creating a custom Formatter
+
+                        - Format an Object to/from a String
+
+```Java
+public class SSNFormatter implements Formatter<SocialSecurityNumber> {
+   @Override
+   public SocialSecurityNumber parse(String s, Locale locale)
+         throws ParseException {
+      SocialSecurityNumber socialSecurityNumber = new SocialSecurityNumber();
+      socialSecurityNumber.setAreaNumber(s.substring(0, 3));
+      socialSecurityNumber.setGroupNumber(s.substring(3, 5));
+      socialSecurityNumber.setSerialNumber(s.substring(5, 9));
+      return socialSecurityNumber;
+   }
+
+   @Override
+   public String print(SocialSecurityNumber socialSecurityNumber, Locale locale) {
+      return socialSecurityNumber.getAreaNumber() + "-" +
+            socialSecurityNumber.getGroupNumber() + "-" +
+            socialSecurityNumber.getSerialNumber();
+   }
+}
+```
+
+                        Note:
+                    </script>
+                </section>
+
+                <section data-markdown data-separator-notes="^Note:">
+                    <script type="text/template">
+                        ## Register a custom formatter
+
+                        - When using `<mvc>` explicit conversion service can be declared
+                        - When using `JavaConfig`:
+
+```Java
+@EnableWebMvc
+@Configuration
+public class MyWebConfig extends WebMvcConfigurerAdapter {
+    @Override
+   public void addFormatters(FormatterRegistry registry) {
+      registry.addFormatterForFieldType(SocialSecurityNumber.class, new SSNFormatter());
+   }
+}
+```
+
+                        Note:
+                    </script>
+                </section>
+
+
                 <section data-markdown>
                     <script type="text/template">
                         ## Lab: lab04

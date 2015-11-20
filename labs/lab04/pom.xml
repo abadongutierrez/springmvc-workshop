@@ -2,7 +2,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
    <modelVersion>4.0.0</modelVersion>
    <groupId>com.nearsoft.workshops.springmvc</groupId>
-   <artifactId>lab03</artifactId>
+   <artifactId>lab04</artifactId>
    <packaging>war</packaging>
    <version>version</version>
    <name>Spring MVC Application</name>
